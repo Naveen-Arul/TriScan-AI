@@ -1,39 +1,63 @@
-import { ScanText, Plus, User, LogOut, History, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ScanText, Plus, User, LogOut, History, ChevronLeft, ChevronRight, FileText, Globe, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-
-interface ChatSession {
-  id: string;
-  title: string;
-  mode: "ocr" | "compare" | "scrape";
-  timestamp: string;
-}
-
-interface SidebarProps {
-  sessions: ChatSession[];
-  activeSession: string | null;
-  onSelectSession: (id: string) => void;
-  onNewChat: () => void;
-  onDeleteSession?: (id: string) => void;
-}
+import { useChatStore } from "@/store/chatStore";
+import { NewChatModal } from "@/components/NewChatModal";
+import { LogoutConfirmModal } from "@/components/LogoutConfirmModal";
+import { LogoutConfirmModal } from "@/components/LogoutConfirmModal";
 
 const modeIcons = {
-  ocr: "📄",
-  compare: "🔄",
-  scrape: "🌐",
+  ocr: FileText,
+  web: Globe,
+  compare: GitCompare,
 };
 
-const Sidebar = ({ sessions, activeSession, onSelectSession, onNewChat, onDeleteSession }: SidebarProps) => {
+const modeColors = {
+  ocr: "text-blue-500",
+  web: "text-purple-500",
+  compare: "text-orange-500",
+};
+
+const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
+  
+  const { history, currentChatId, refreshHistory, setCurrentChatId } = useChatStore();
+
+  // Load chat history on mount
+  useEffect(() => {
+    refreshHistory();
+  }, [refreshHistory]);
 
   const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const handleSelectChat = (chatId: string, mode: string) => {
+    setCurrentChatId(chatId);
+    navigate(`/chat/${chatId}/${mode}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
   };
 
   return (
@@ -68,7 +92,7 @@ const Sidebar = ({ sessions, activeSession, onSelectSession, onNewChat, onDelete
       {/* New Chat Button */}
       <div className="p-3">
         <Button
-          onClick={onNewChat}
+          onClick={() => setShowNewChatModal(true)}
           className={cn(
             "w-full justify-start gap-2"
           )}
@@ -88,43 +112,40 @@ const Sidebar = ({ sessions, activeSession, onSelectSession, onNewChat, onDelete
           </div>
         )}
         <div className="space-y-1">
-          {sessions.map((session) => (
-            <div 
-              key={session.id} 
-              className="flex items-center group"
-            >
+          {history.length === 0 && !collapsed && (
+            <p className="text-xs text-muted-foreground px-2 py-4 text-center">
+              No chats yet. Start a new chat to begin!
+            </p>
+          )}
+          {history.map((chat) => {
+            const ModeIcon = modeIcons[chat.mode];
+            const isActive = currentChatId === chat.chatId;
+            
+            return (
               <button
-                onClick={() => onSelectSession(session.id)}
+                key={chat.chatId}
+                onClick={() => handleSelectChat(chat.chatId, chat.mode)}
                 className={cn(
-                  "flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left",
-                  activeSession === session.id
+                  "w-full flex items-start gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left",
+                  isActive
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                 )}
               >
-                <span className="text-base">{modeIcons[session.mode]}</span>
+                <ModeIcon className={cn("w-4 h-4 mt-0.5 flex-shrink-0", modeColors[chat.mode])} />
                 {!collapsed && (
-                  <div className="flex-1 truncate">
-                    <p className="truncate">{session.title}</p>
-                    <p className="text-xs text-muted-foreground">{session.timestamp}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate text-sm font-medium">
+                      {chat.preview || `${chat.mode.toUpperCase()} Chat`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(chat.createdAt)}
+                    </p>
                   </div>
                 )}
               </button>
-              {!collapsed && onDeleteSession && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="opacity-0 group-hover:opacity-100 h-6 w-6 ml-1 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteSession(session.id);
-                  }}
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -152,6 +173,19 @@ const Sidebar = ({ sessions, activeSession, onSelectSession, onNewChat, onDelete
           {!collapsed && "Logout"}
         </Button>
       </div>
+
+      {/* New Chat Modal */}
+      <NewChatModal 
+        open={showNewChatModal} 
+        onOpenChange={setShowNewChatModal} 
+      />
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        open={showLogoutModal}
+        onOpenChange={setShowLogoutModal}
+        onConfirm={confirmLogout}
+      />
     </aside>
   );
 };

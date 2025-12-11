@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { authApi } from "@/api";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,21 +21,32 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate login API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In a real app, you would validate credentials with your backend
-    // and receive a token
-    const fakeToken = "fake-jwt-token-" + Date.now();
-    login(fakeToken);
-    
-    toast({
-      title: "Welcome back!",
-      description: "You have successfully logged in.",
-    });
-    
-    navigate("/dashboard");
-    setIsLoading(false);
+    try {
+      const response = await authApi.login({
+        email,
+        password
+      });
+
+      if (response.success) {
+        // Token is already stored by authApi.login
+        login(response.token);
+        
+        toast({
+          title: "Welcome back!",
+          description: `Logged in as ${response.user.name}`,
+        });
+        
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.message || "Invalid email or password",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

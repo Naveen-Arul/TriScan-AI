@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { authApi } from "@/api";
 
 const countries = [
   "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -36,21 +37,37 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate signup API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In a real app, you would create the user account with your backend
-    // and receive a token
-    const fakeToken = "fake-jwt-token-" + Date.now();
-    login(fakeToken);
-    
-    toast({
-      title: "Account created!",
-      description: "Welcome to TriScan AI. Let's get started!",
-    });
-    
-    navigate("/dashboard");
-    setIsLoading(false);
+    try {
+      // Call backend signup API
+      const response = await authApi.signup({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        dob: formData.dob,
+        gender: formData.gender,
+        country: formData.country,
+      });
+
+      // Token is already stored by authApi.signup
+      if (response.success && response.token) {
+        login(response.token);
+        
+        toast({
+          title: "Account created!",
+          description: `Welcome to TriScan AI, ${response.user.name}!`,
+        });
+        
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      toast({
+        title: "Signup failed",
+        description: error instanceof Error ? error.message : "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -147,10 +164,9 @@ const Signup = () => {
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                      <SelectItem value="prefer-not">Prefer not to say</SelectItem>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
