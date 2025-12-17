@@ -3,7 +3,7 @@
  * Handles file upload and OCR text extraction
  */
 
-import { postForm } from './apiClient';
+import { postForm, post, get } from './apiClient';
 
 /**
  * Upload files for OCR processing
@@ -35,6 +35,39 @@ export const uploadOCR = async (chatId, files) => {
 };
 
 /**
+ * Ask a question about the extracted OCR text
+ * @param {string} chatId - Chat session ID
+ * @param {string} question - Question to ask
+ * @returns {Promise<Object>} Response with AI answer
+ */
+export const askQuestion = async (chatId, question) => {
+  if (!chatId) {
+    throw new Error('chatId is required');
+  }
+  
+  if (!question || question.trim() === '') {
+    throw new Error('Question is required');
+  }
+
+  const response = await post('/api/ocr/ask', { chatId, question });
+  return response;
+};
+
+/**
+ * Get all messages for a chat
+ * @param {string} chatId - Chat session ID
+ * @returns {Promise<Object>} Response with messages array
+ */
+export const getMessages = async (chatId) => {
+  if (!chatId) {
+    throw new Error('chatId is required');
+  }
+
+  const response = await get(`/api/ocr/messages/${chatId}`);
+  return response;
+};
+
+/**
  * Validate file type for OCR
  * @param {File} file - File to validate
  * @returns {boolean} True if file type is supported
@@ -59,6 +92,8 @@ export const getSupportedFileTypes = () => {
 
 export default {
   uploadOCR,
+  askQuestion,
+  getMessages,
   isValidOCRFile,
   getSupportedFileTypes
 };

@@ -8,6 +8,7 @@ import * as chatApi from './chat';
 import * as ocrApi from './ocr';
 import * as webApi from './web';
 import * as compareApi from './compare';
+import * as userApi from './user';
 import apiClient from './apiClient';
 
 export {
@@ -16,6 +17,7 @@ export {
   ocrApi,
   webApi,
   compareApi,
+  userApi,
   apiClient
 };
 

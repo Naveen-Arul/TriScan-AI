@@ -112,7 +112,9 @@ export const NewChatModal = ({ open, onOpenChange }: NewChatModalProps) => {
                     p-3 rounded-lg bg-gradient-to-br ${mode.bgGradient}
                     ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}
                   `}>
-                    <Icon className={`w-6 h-6 bg-gradient-to-br ${mode.gradient} bg-clip-text text-transparent`} />
+                    <Icon className="w-6 h-6" style={{ 
+                      color: mode.id === 'ocr' ? '#3b82f6' : mode.id === 'web' ? '#a855f7' : '#f97316' 
+                    }} />
                   </div>
                   
                   <div className="flex-1">

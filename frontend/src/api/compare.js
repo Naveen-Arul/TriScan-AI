@@ -3,7 +3,7 @@
  * Handles multi-file comparison and difference analysis
  */
 
-import { postForm } from './apiClient';
+import { postForm, post, get } from './apiClient';
 
 /**
  * Compare multiple files and get differences/similarities
@@ -77,9 +77,44 @@ export const formatComparisonResult = (comparisonResult) => {
   };
 };
 
+/**
+ * Ask a question about file comparison results
+ * @param {string} chatId - Chat session ID
+ * @param {string} question - Question to ask about the comparison
+ * @returns {Promise<Object>} Response with AI answer and updated messages
+ */
+export const askQuestion = async (chatId, question) => {
+  if (!chatId) {
+    throw new Error('chatId is required');
+  }
+  
+  if (!question) {
+    throw new Error('question is required');
+  }
+
+  const response = await post('/api/compare/ask', { chatId, question });
+  return response;
+};
+
+/**
+ * Get all messages for a comparison chat
+ * @param {string} chatId - Chat session ID
+ * @returns {Promise<Object>} Response with messages array and contextText
+ */
+export const getMessages = async (chatId) => {
+  if (!chatId) {
+    throw new Error('chatId is required');
+  }
+
+  const response = await get('/api/compare/messages/' + chatId);
+  return response;
+};
+
 export default {
   compareFiles,
   isValidCompareFile,
   getSupportedFileTypes,
-  formatComparisonResult
+  formatComparisonResult,
+  askQuestion,
+  getMessages
 };

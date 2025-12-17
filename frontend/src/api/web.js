@@ -3,7 +3,7 @@
  * Handles URL scraping and content extraction
  */
 
-import { post } from './apiClient';
+import { post, get } from './apiClient';
 
 /**
  * Scrape a web page and extract clean content
@@ -56,8 +56,43 @@ export const extractDomain = (url) => {
   }
 };
 
+/**
+ * Ask a question about scraped web content
+ * @param {string} chatId - Chat session ID
+ * @param {string} question - Question to ask about the scraped content
+ * @returns {Promise<Object>} Response with AI answer and updated messages
+ */
+export const askQuestion = async (chatId, question) => {
+  if (!chatId) {
+    throw new Error('chatId is required');
+  }
+  
+  if (!question) {
+    throw new Error('question is required');
+  }
+
+  const response = await post('/api/web/ask', { chatId, question });
+  return response;
+};
+
+/**
+ * Get all messages for a web scraping chat
+ * @param {string} chatId - Chat session ID
+ * @returns {Promise<Object>} Response with messages array and contextText
+ */
+export const getMessages = async (chatId) => {
+  if (!chatId) {
+    throw new Error('chatId is required');
+  }
+
+  const response = await get('/api/web/messages/' + chatId);
+  return response;
+};
+
 export default {
   scrape,
   isValidUrl,
-  extractDomain
+  extractDomain,
+  askQuestion,
+  getMessages
 };

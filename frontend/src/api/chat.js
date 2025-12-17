@@ -44,8 +44,32 @@ export const getChatById = async (chatId) => {
   return null;
 };
 
+/**
+ * Delete a chat by chatId
+ * @param {string} chatId - Chat ID to delete
+ * @returns {Promise<Object>} Response with success status
+ */
+export const deleteChat = async (chatId) => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chat/${chatId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to delete chat');
+  }
+  
+  return data;
+};
+
 export default {
   createChat,
   getHistory,
-  getChatById
+  getChatById,
+  deleteChat
 };

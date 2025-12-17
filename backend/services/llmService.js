@@ -29,7 +29,7 @@ async function cleanupOCR(rawText) {
           content: `Clean up this OCR text:\n\n${rawText}`
         }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       temperature: 0.3,
       max_tokens: 4096
     });
@@ -67,7 +67,7 @@ async function cleanupScrape(rawText) {
           content: `Clean up this scraped web content:\n\n${rawText}`
         }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       temperature: 0.3,
       max_tokens: 4096
     });
@@ -106,7 +106,7 @@ async function summarizeComparison(comparisonData) {
           content: `Summarize this file comparison:\n\n${dataStr}`
         }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       temperature: 0.5,
       max_tokens: 2048
     });
@@ -137,7 +137,7 @@ async function improveText(text, task = 'improve readability') {
           content: text
         }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       temperature: 0.4,
       max_tokens: 4096
     });
@@ -149,9 +149,42 @@ async function improveText(text, task = 'improve readability') {
   }
 }
 
+/**
+ * Generate a chat title using Groq LLM
+ * @param {string} text - Text content to generate title from
+ * @returns {Promise<string>} Generated title (max 6 words)
+ */
+async function generateChatTitle(text) {
+  try {
+    const prompt = `Generate a short, meaningful title (max 6 words) for this text:
+
+${text.substring(0, 500)}
+
+Return ONLY the title.`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.7,
+      max_tokens: 20
+    });
+
+    return chatCompletion.choices[0]?.message?.content?.trim() || 'Untitled Chat';
+  } catch (error) {
+    console.error('Error generating chat title with Groq:', error);
+    return 'Untitled Chat';
+  }
+}
+
 module.exports = {
   cleanupOCR,
   cleanupScrape,
   summarizeComparison,
-  improveText
+  improveText,
+  generateChatTitle
 };

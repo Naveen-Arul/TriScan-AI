@@ -1,4 +1,5 @@
-import { ScanText, GitCompare, Globe, Sparkles } from "lucide-react";
+import { ScanText, GitCompare, Globe, Sparkles, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface WelcomeScreenProps {
   onSelectMode: (mode: "ocr" | "compare" | "scrape") => void;
@@ -29,6 +30,14 @@ const tools = [
 ];
 
 const WelcomeScreen = ({ onSelectMode }: WelcomeScreenProps) => {
+  const [loadingMode, setLoadingMode] = useState<string | null>(null);
+
+  const handleClick = async (mode: "ocr" | "compare" | "scrape") => {
+    setLoadingMode(mode);
+    await onSelectMode(mode);
+    setLoadingMode(null);
+  };
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-8">
       <div className="text-center mb-12 max-w-2xl">
@@ -46,21 +55,29 @@ const WelcomeScreen = ({ onSelectMode }: WelcomeScreenProps) => {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 max-w-4xl w-full">
-        {tools.map((tool) => (
+        {tools.map((tool) => {
+          const isThisLoading = loadingMode === tool.id;
+          return (
           <button
             key={tool.id}
-            onClick={() => onSelectMode(tool.id)}
-            className="group glass-card p-8 text-left hover:border-primary/50 transition-all duration-500 hover:shadow-glow"
+            onClick={() => handleClick(tool.id)}
+            disabled={loadingMode !== null}
+            className="group glass-card p-8 text-left hover:border-primary/50 transition-all duration-500 hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div
               className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
             >
-              <tool.icon className="w-8 h-8 text-primary-foreground" />
+              {isThisLoading ? (
+                <Loader2 className="w-8 h-8 text-primary-foreground animate-spin" />
+              ) : (
+                <tool.icon className="w-8 h-8 text-primary-foreground" />
+              )}
             </div>
             <h3 className="text-xl font-semibold mb-2">{tool.title}</h3>
             <p className="text-muted-foreground">{tool.description}</p>
           </button>
-        ))}
+        );
+        })}
       </div>
     </div>
   );

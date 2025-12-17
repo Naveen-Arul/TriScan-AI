@@ -58,4 +58,31 @@ router.get('/history', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @route   DELETE /api/chat/:chatId
+ * @desc    Delete a chat session
+ * @access  Private
+ * 
+ * Example cURL command:
+ * curl -X DELETE http://localhost:5000/api/chat/<CHAT_ID> \
+ *   -H "Authorization: Bearer <TOKEN>"
+ */
+router.delete('/:chatId', authMiddleware, async (req, res) => {
+  try {
+    const { chatId } = req.params;
+
+    const chat = await Chat.findOne({ chatId, userId: req.user.userId });
+
+    if (!chat) {
+      return res.status(404).json({ success: false, message: 'Chat not found' });
+    }
+
+    await Chat.deleteOne({ chatId, userId: req.user.userId });
+
+    res.json({ success: true, message: 'Chat deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Error deleting chat' });
+  }
+});
+
 module.exports = router;
