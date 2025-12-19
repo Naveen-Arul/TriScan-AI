@@ -59,11 +59,16 @@
    ```
    NODE_ENV=production
    PORT=10000
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/triscan-ai
-   JWT_SECRET=your-secure-random-jwt-secret-key
-   GROQ_API_KEY=your-groq-api-key
+   MONGODB_URI=<your-mongodb-atlas-connection-string>
+   JWT_SECRET=<your-secure-random-jwt-secret-key>
+   GROQ_API_KEY=<your-groq-api-key>
    FRONTEND_URL=https://your-app.vercel.app
    ```
+   
+   **Note:** Replace all values in `<angle brackets>` with your actual credentials.
+   - MONGODB_URI format: `mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>`
+   - JWT_SECRET: Generate a secure random string (min 32 characters)
+   - Get GROQ_API_KEY from [Groq Console](https://console.groq.com/)
 
 4. **MongoDB Atlas Setup**
    - Create a MongoDB Atlas account

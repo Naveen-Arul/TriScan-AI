@@ -31,7 +31,7 @@ Edit `.env` and update the following:
 
 - **MONGO_URI**: Your MongoDB connection string
   - Local: `mongodb://localhost:27017/triscan-ai`
-  - Atlas: `mongodb+srv://<username>:<password>@cluster.mongodb.net/triscan-ai`
+  - Atlas: `mongodb+srv://<username>:<password>@<cluster>.mongodb.net/triscan-ai`
 - **JWT_SECRET**: A strong secret key for JWT tokens
   - Generate one: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
 - **PORT**: Server port (default: 5000)
