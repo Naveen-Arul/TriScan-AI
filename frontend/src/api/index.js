@@ -27,5 +27,6 @@ export default {
   ocr: ocrApi,
   web: webApi,
   compare: compareApi,
+  user: userApi,
   client: apiClient
 };
