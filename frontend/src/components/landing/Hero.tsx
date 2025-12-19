@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowRight, Sparkles, Code2, Heart, Github, Linkedin, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
@@ -39,6 +40,92 @@ const Hero = () => {
             Transform any document with intelligent OCR, compare multiple files instantly, 
             and extract clean content from any website. Three powerful tools in one unified platform.
           </p>
+
+          {/* Developer Card */}
+          <div className="w-full max-w-2xl mb-10 animate-fade-up" style={{ animationDelay: "0.45s" }}>
+            <Card className="glass-card p-6 border-2 hover:border-primary/50 transition-all duration-500 group">
+              <div className="flex items-center gap-6">
+                {/* Avatar */}
+                <div className="relative flex-shrink-0">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-1 animate-pulse-glow">
+                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
+                      <Code2 className="w-10 h-10 text-primary" />
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-1.5">
+                    <Heart className="w-3 h-3 fill-current" />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 text-left">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 mb-2">
+                    <span className="text-xs font-semibold text-primary">Developer</span>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold mb-2">
+                    Developed by <span className="gradient-text">Naveen Arul</span>
+                  </h3>
+                  
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Full-stack developer passionate about building AI-powered applications 
+                    that solve real-world problems.
+                  </p>
+
+                  {/* Social Links */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 h-8 text-xs hover:border-primary/50 hover:bg-primary/10"
+                      asChild
+                    >
+                      <a href="https://github.com/Naveen-Arul" target="_blank" rel="noopener noreferrer">
+                        <Github className="w-3 h-3" />
+                        GitHub
+                      </a>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 h-8 text-xs hover:border-primary/50 hover:bg-primary/10"
+                      asChild
+                    >
+                      <a href="https://www.linkedin.com/in/naveen2408/" target="_blank" rel="noopener noreferrer">
+                        <Linkedin className="w-3 h-3" />
+                        LinkedIn
+                      </a>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 h-8 text-xs hover:border-primary/50 hover:bg-primary/10"
+                      asChild
+                    >
+                      <a href="mailto:naveenarul111@gmail.com">
+                        <Mail className="w-3 h-3" />
+                        Email
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tech Stack Pills */}
+              <div className="mt-4 pt-4 border-t border-border/50 flex flex-wrap gap-2 justify-center">
+                {["React", "TypeScript", "Node.js", "MongoDB", "Groq AI", "Tailwind CSS"].map((tech) => (
+                  <div
+                    key={tech}
+                    className="px-3 py-1 rounded-full bg-secondary/50 border border-border text-xs font-medium text-muted-foreground hover:border-primary/50 hover:text-primary transition-all cursor-default"
+                  >
+                    {tech}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: "0.5s" }}>
