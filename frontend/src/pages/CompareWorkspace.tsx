@@ -53,7 +53,10 @@ const CompareWorkspace = () => {
       navigate(`/chat/${chatId}/${chatData.mode}`);
       return;
     }
-loadMessages();
+
+    setChat(chatData);
+    setCurrentChatId(chatId);
+    loadMessages();
     setIsLoading(false);
   }, [chatId, getChatById, navigate, setCurrentChatId]);
 
@@ -301,42 +304,7 @@ loadMessages();
                             : 'bg-secondary border border-border'
                         )}
                       >
-                        {index === 1 && message.role === 'assistant' ? (
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Sparkles className="w-4 h-4" />
-                              <span className="text-xs font-semibold">Comparison Summary</span>
-                            </div>
-                            <div className="max-h-96 overflow-y-auto">
-                              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                                {message.content}
-                              </pre>
-                            </div>
-                            <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                              <span className="text-xs text-muted-foreground">
-                                {message.content.length} characters
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleCopyText(message.content)}
-                                className="gap-2 h-7"
-                              >
-                                {isCopied ? (
-                                  <>
-                                    <CheckCheck className="w-3 h-3" />
-                                    <span className="text-xs">Copied</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="w-3 h-3" />
-                                    <span className="text-xs">Copy</span>
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-                        ) : message.role === 'assistant' ? (
+                        {message.role === 'assistant' ? (
                           <div className="space-y-2">
                             <div className="prose prose-sm prose-invert max-w-none">
                               <ReactMarkdown
