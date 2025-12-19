@@ -4,6 +4,21 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 /**
+ * @route   GET /api/test/health
+ * @desc    Health check endpoint for deployment monitoring
+ * @access  Public
+ */
+router.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+/**
  * @route   GET /api/test/protected
  * @desc    Test protected route - requires valid JWT token
  * @access  Private
